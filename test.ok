@@ -1,0 +1,38 @@
+spawn qemu -nographic --serial mon:stdio -hdc kernel/kernel.img
+x
+starting kernel
+mapping the first 2M with va = pa
+kernel.c:54 -- ((getcr0() & 0x80000000) == 0) ==> happy
+about to enable paging
+kernel.c:59 -- ((getcr0() & 0x80000000) != 0) ==> happy
+kernel.c:61 -- (vmm_pa(0xf0000000) == 0xffffffff) ==> happy
+kernel.c:66 -- (vmm_pa(0xf0000000) != 0xffffffff) ==> happy
+kernel.c:67 -- ((vmm_pa(0xf0000123) & 0xfff) == 0x123) ==> happy
+kernel.c:69 -- (vmm_dirty(0xf0000000) == 0) ==> happy
+kernel.c:70 -- (vmm_accessed(0xf0000000) == 0) ==> happy
+kernel.c:72 -- (peek(0xf0000000) == 0) ==> happy
+kernel.c:73 -- (vmm_dirty(0xf0000000) == 0) ==> happy
+kernel.c:74 -- (vmm_accessed(0xf0000000) == 1) ==> happy
+kernel.c:77 -- (peek(0xf0000000) == 0x12345678) ==> happy
+kernel.c:78 -- (vmm_dirty(0xf0000000) == 1) ==> happy
+kernel.c:79 -- (vmm_accessed(0xf0000000) == 1) ==> happy
+kernel.c:81 -- (vmm_dirty(0xe0000000) == 0) ==> happy
+kernel.c:82 -- (vmm_accessed(0xe0000000) == 0) ==> happy
+kernel.c:84 -- (vmm_pa(0x40000000) == 0xffffffff) ==> happy
+kernel.c:87 -- (peek(0xe0000000) == 0x12345678) ==> happy
+kernel.c:89 -- (vmm_dirty(0xe0000000) == 0) ==> happy
+kernel.c:90 -- (vmm_accessed(0xe0000000) == 1) ==> happy
+page fault @ 0x44444444
+kernel.c:92 -- (peek(0x44444444) == 0) ==> happy
+kernel.c:93 -- (vmm_dirty(0x44444000) == 0) ==> happy
+kernel.c:94 -- (vmm_accessed(0x44443000) == 0) ==> happy
+kernel.c:95 -- (vmm_accessed(0x44444000) == 1) ==> happy
+kernel.c:96 -- (vmm_accessed(0x44445000) == 0) ==> happy
+page fault @ 0x88888888
+kernel.c:99 -- (peek(0x88888888) == 0x88888888) ==> happy
+kernel.c:102 -- (peek(0xccccc888) == 0x88888888) ==> happy
+kernel.c:104 -- (vmm_pa(0xccccc666) == vmm_pa(0x88888666)) ==> happy
+page fault @ 0xccccc888
+kernel.c:107 -- (peek(0xccccc888) == 0) ==> happy
+kernel.c:108 -- (peek(0x88888888) == 0x88888888) ==> happy
+*** System Shutdown ***
